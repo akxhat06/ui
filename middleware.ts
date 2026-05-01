@@ -1,23 +1,29 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
-const PUBLIC = ["/login", "/api/auth/login"];
-
-export function middleware(req: NextRequest) {
+  import type { NextRequest } from "next/server";                                                                                                                                                                    
+  import { updateSession } from "@/lib/supabase/middleware";
+                                                                                                                                                                                                                     
+  const PUBLIC_PATHS = ["/login", "/auth/callback"];
+                                                                                                                                                                                                                     
+  export async function middleware(req: NextRequest) {                                                                                                                                                               
     const { pathname } = req.nextUrl;
-    const authed = req.cookies.get("auth")?.value === "ok";
-
-    if (PUBLIC.some((p) => pathname.startsWith(p))) {
-        if (pathname === "/login" && authed) {
-            return NextResponse.redirect(new URL("/overview", req.url));
-        }
-        return NextResponse.next();
+    const { response, user } = await updateSession(req);                                                                                                                                                             
+                  
+    const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));                                                                                                                       
+  
+    if (isPublic) {                                                                                                                                                                                                  
+      if (pathname === "/login" && user) {
+        return NextResponse.redirect(new URL("/overview", req.url));                                                                                                                                                 
+      }           
+      return response;
+    }                                                                                                                                                                                                                
+  
+    if (!user) {                                                                                                                                                                                                     
+      return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    if (!authed) return NextResponse.redirect(new URL("/login", req.url));
-    return NextResponse.next();
-}
-
-export const config = {
-    matcher: ["/((?!_next|favicon.ico|.*\\..*).*)"],
-};   
+    return response;
+  }
+                                                                                                                                                                                                                     
+  export const config = {
+    matcher: ["/((?!_next|favicon.ico|.*\\..*).*)"],                                                                                                                                                                 
+  }; 

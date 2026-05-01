@@ -27,12 +27,19 @@ export type StepRecord = {
   message?: string;
 };
 
+export type UserContext = {
+  userId: string; 
+  resumeSummary: string;                                                                                                                                                                                           
+  techStacks: string[];
+  experience: number;
+  location: string;
+};                                                                                                                                                                                                                 
+
 export type RunRecord = {
   id: string;
   startedAt: string;
   finishedAt: string | null;
   status: "running" | "done" | "error";
-  trigger: "manual" | "cron";
   steps: StepRecord[];
   totals: {
     scraped: number;

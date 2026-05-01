@@ -1,72 +1,21 @@
-/* @import "tailwindcss";                                                                                                                                                                   */
-                  
-/* Tailwind v4: design tokens live in CSS; utilities are generated from these names. */
-/* @theme {
-    --color-cream: #FBF8F1;
-    --color-surface: #FFFFFF;                                                                                                                                                             
-    --color-ink: #1A1A1A;
-    --color-muted: #6B6862;                                                                                                                                                               
-    --color-muted-light: #9C9890;                                                                                                                                                         
-    --color-line: #E8E4DA;
-    --color-line-strong: #D4CFC0;                                                                                                                                                         
-    --color-accent: #B5413A;
-    --color-accent-soft: #F0DCDA;                                                                                                                                                         
-    --color-status-done: #3D6647;
-    --color-status-error: #A03030;                                                                                                                                                        
-                                                                                                                                                                                          
-    --font-serif: var(--font-serif), Georgia, serif;                                                                                                                                      
-    --font-sans: var(--font-sans), system-ui, sans-serif;                                                                                                                                 
-    --font-mono: var(--font-mono), ui-monospace, monospace;                                                                                                                               
-  
-    --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;                                                                                                                           
-    --animate-fade-up: fade-up 0.6s ease-out both;
-  }                                                                                                                                                                                       
-                  
-  @keyframes pulse-soft {                                                                                                                                                                 
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.6; transform: scale(0.96); }                                                                                                                                    
-  }                                                                                                                                                                                       
-                                                                                                                                                                                          
-  @keyframes fade-up {                                                                                                                                                                    
-    0%   { opacity: 0; transform: translateY(8px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }                                                                                                                                                                                       
-  
-  html {                                                                                                                                                                                  
-    background: #FBF8F1;
-  }
-                                                                                                                                                                                          
-  body {
-    background-color: #FBF8F1;                                                                                                                                                            
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25'filter='url(%23n)'/></svg>");
-    color: #1A1A1A;                                                                                                                                                                       
-    font-feature-settings: "ss01", "cv01";                                                                                                                                                
-  }
-                                                                                                                                                                                          
-  ::selection {   
-    background-color: #B5413A;
-    color: #FBF8F1;                                                                                                                                                                       
-  }
-                                                                                                                                                                                          
-  @utility text-balance {
-    text-wrap: balance;
-  }
-                                                                                                                                                                                          
-  @utility text-pretty {
-    text-wrap: pretty;                                                                                                                                                                    
-  }  */
-
-  @import "tailwindcss";
-                                                                                                                                                                                                                                                                               
-  html, body {                                                                                                                                                                                                                                                                 
-    background: #f8fafc; /* slate-50 */
-    color: #0f172a;      /* slate-900 */                                                                                                                                                                                                                                       
-    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;                                                                                                                                                                                                                                       
-    -moz-osx-font-smoothing: grayscale;
-  }                                                                                                                                                                                                                                                                            
-                  
-  ::selection {                                                                                                                                                                                                                                                                
-    background-color: #2563eb; /* blue-600 */
-    color: #ffffff;                                                                                                                                                                                                                                                            
-  }
+@import "tailwindcss";
+                                                                                                                                                                                                                     
+@variant dark (&:where(.dark, .dark *));
+                                                                                                                                                                                                                   
+html, body {    
+  background: #f8fafc; /* slate-50 */
+  color: #0f172a;      /* slate-900 */                                                                                                                                                                             
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;                                                                                                                                                                             
+  -moz-osx-font-smoothing: grayscale;
+}                                                                                                                                                                                                                  
+                
+html.dark, html.dark body {                                                                                                                                                                                        
+  background: #020617; /* slate-950 */
+  color: #f1f5f9;      /* slate-100 */                                                                                                                                                                             
+}
+                                                                                                                                                                                                                   
+::selection {   
+  background-color: #2563eb;
+  color: #ffffff;                                                                                                                                                                                                  
+}
