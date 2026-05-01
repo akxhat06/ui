@@ -22,7 +22,6 @@ type Step = 1 | 2 | 3;
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const supabase = getSupabaseBrowser();
 
   const [userId, setUserId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -43,6 +42,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     (async () => {
+      const supabase = getSupabaseBrowser();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
       setUserId(user.id);
@@ -57,7 +57,7 @@ export default function OnboardingPage() {
       }
       setHydrated(true);
     })();
-  }, [router, supabase]);
+  }, [router]);
 
   const validity = useMemo(
     () => ({
@@ -107,6 +107,7 @@ export default function OnboardingPage() {
     setError(null);
     setSaving(true);
     try {
+      const supabase = getSupabaseBrowser();
       let resumePath: string | undefined;
       let resumeFilename: string | undefined;
 
