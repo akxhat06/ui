@@ -40,6 +40,7 @@ export type RunRecord = {
   startedAt: string;
   finishedAt: string | null;
   status: "running" | "done" | "error";
+  cancelRequested?: boolean;
   steps: StepRecord[];
   totals: {
     scraped: number;

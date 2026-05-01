@@ -101,3 +101,19 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
     memoryByUser.set(userId, runs);                                                                                                                                                                                  
     await persist(userId);                                                                                                                                                                                           
   }
+
+export async function requestStopCurrent(userId: string): Promise<RunRecord | undefined> {
+  const runs = await load(userId);
+  const current = runs.find((r) => r.status === "running");
+  if (!current) return undefined;
+  current.cancelRequested = true;
+  memoryByUser.set(userId, runs);
+  await persist(userId);
+  return current;
+}
+
+export async function isStopRequested(userId: string, runId: string): Promise<boolean> {
+  const runs = await load(userId);
+  const run = runs.find((r) => r.id === runId);
+  return !!run && run.status === "running" && !!run.cancelRequested;
+}

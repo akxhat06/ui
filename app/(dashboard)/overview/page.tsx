@@ -80,6 +80,17 @@ export default function OverviewPage() {
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); setRunning(false); }
   }
 
+  async function stopWorkflow() {
+    setError(null);
+    try {
+      const r = await fetch("/api/workflow/stop", { method: "POST" });
+      if (!r.ok) throw new Error(`stop ${r.status}`);
+      await refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
   const activeRun = status?.current ?? status?.latest ?? null;
   const logs = useMemo(() => buildLogs(activeRun), [activeRun]);
   const filteredLogs = useMemo(
@@ -143,6 +154,13 @@ export default function OverviewPage() {
 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
             {running && <Spinner />}
             {running ? "Running" : "Run now"}
+          </button>
+          <button
+            onClick={stopWorkflow}
+            disabled={!running}
+            className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-sm font-medium px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+          >
+            Stop
           </button>
           <a href="/api/workflow/download"
             className="inline-flex items-center gap-2 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium px-4 py-2     

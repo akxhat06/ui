@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
   import { scoreJobs } from "./score";                                                                                                                                                                               
   import { filterByScore } from "./filter";                                                                                                                                                                          
   import { appendJobs, loadSavedUrls, xlsxPathFor } from "./xlsx-writer";
-  import { getCurrent, upsertRun } from "./store";                                                                                                                                                                   
+import { getCurrent, isStopRequested, upsertRun } from "./store";
   import type { Job, RunRecord, StepName, StepRecord, UserContext } from "./types";
                                                                                                                                                                                                                      
   function emptyStep(name: StepName): StepRecord {                                                                                                                                                                   
@@ -18,21 +18,30 @@ import { randomUUID } from "node:crypto";
       startedAt: new Date().toISOString(),
       finishedAt: null,                                                                                                                                                                                              
       status: "running",
+    cancelRequested: false,
       steps: (["scrape", "normalize", "score", "filter", "save"] as StepName[]).map(emptyStep),
       totals: { scraped: 0, afterDedupe: 0, scored: 0, passed: 0, saved: 0 },                                                                                                                                        
     };                                                                                                                                                                                                               
   }                                                                                                                                                                                                                  
+
+async function assertNotStopped(userId: string, run: RunRecord): Promise<void> {
+  if (await isStopRequested(userId, run.id)) {
+    throw new Error("Stopped by user");
+  }
+}
                                                                                                                                                                                                                      
   async function runStep<T>(                                                                                                                                                                                         
     userId: string, run: RunRecord, name: StepName,
     fn: () => Promise<{ value: T; count: number; message?: string }>                                                                                                                                                 
   ): Promise<T> {                                                                                                                                                                                                    
+  await assertNotStopped(userId, run);
     const step = run.steps.find((s) => s.name === name)!;                                                                                                                                                            
     step.status = "running"; step.startedAt = new Date().toISOString();                                                                                                                                              
     await upsertRun(userId, run);                                                                                                                                                                                    
     const t0 = Date.now();
     try {                                                                                                                                                                                                            
       const { value, count, message } = await fn();
+    await assertNotStopped(userId, run);
       step.status = "done"; step.count = count; step.message = message;                                                                                                                                              
       step.finishedAt = new Date().toISOString(); step.durationMs = Date.now() - t0;
       await upsertRun(userId, run);                                                                                                                                                                                  
@@ -41,6 +50,7 @@ import { randomUUID } from "node:crypto";
       step.status = "error";
       step.message = e instanceof Error ? e.message : String(e);                                                                                                                                                     
       step.finishedAt = new Date().toISOString(); step.durationMs = Date.now() - t0;
+    await upsertRun(userId, run);
       throw e;                                                                                                                                                                                                       
     }             
   }                                                                                                                                                                                                                  
@@ -94,7 +104,8 @@ import { randomUUID } from "node:crypto";
         return { value: result, count: result.added, message: `${result.total} total in sheet` };                                                                                                                    
       });                                                                                                                                                                                                            
                                                                                                                                                                                                                      
-      run.status = "done"; run.finishedAt = new Date().toISOString();                                                                                                                                                
+      await assertNotStopped(ctx.userId, run);
+      run.status = "done"; run.finishedAt = new Date().toISOString();
       await upsertRun(ctx.userId, run);                                                                                                                                                                              
       return run; 
     } catch (e) {

@@ -53,20 +53,29 @@ import type { Job, ScrapeConfig } from "./types";
     pages: string                                                                                                                                                                                                    
   ): Promise<Job[]> {
     const base = endpoint.startsWith("http") ? endpoint : `https://${endpoint}`;
-    const url = new URL(base);                                                                                                                                                                                       
+    const url = new URL(base);                   
     url.searchParams.set("keywords", keywords);
     url.searchParams.set("location", location);                                                                                                                                                                      
     url.searchParams.set("experience", experience);
-    url.searchParams.set("pages", pages);                                                                                                                                                                            
+    url.searchParams.set("pages", pages);  
+    url.searchParams.set("with_applicants", 'true');                                                                                                                                                                          
                   
-    console.log(`[scrape] → ${location}`);                                                                                                                                                                           
+    console.log(`endpoint url → ${url}`);                                                                                                                                                                           
     const resp = await fetch(url.toString(), {
       headers: { Accept: "application/json" },                                                                                                                                                                       
       cache: "no-store",                                                                                                                                                                                             
     });
-    if (!resp.ok) throw new Error(`Scraper ${resp.status} for "${location}"`);                                                                                                                                       
-                                                                                                                                                                                                                     
-    const payload = await resp.json();
+    const raw = await resp.text();
+    const preview = raw.length > 600 ? `${raw.slice(0, 600)}...<truncated>` : raw;
+    console.log(`[scrape] response ${resp.status} ${resp.statusText} for "${location}"`);
+    if (!resp.ok) throw new Error(`Scraper ${resp.status} for "${location}" :: ${preview || "<empty>"}`);
+
+    let payload: unknown;
+    try {
+      payload = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Scraper returned non-JSON payload for "${location}"`);
+    }
     const list = extractList(payload);                                                                                                                                                                               
     const jobs: Job[] = [];
     for (const raw of list) {                                                                                                                                                                                        
@@ -120,6 +129,10 @@ import type { Job, ScrapeConfig } from "./types";
     if (failed === locations.length) {                                                                                                                                                                               
       throw new Error(`All ${failed} location(s) failed to scrape`);
     }                                                                                                                                                                                                                
+
+  if (merged.length === 0) {
+    throw new Error("No jobs found for your current tech skills. Please update tech skills and try again.");
+  }
   
     return merged;                                                                                                                                                                                                   
   } 
