@@ -16,7 +16,6 @@ function Notice({ tone, variant, children }: { tone: "error" | "info"; variant: 
 
 export default function LoginPage() {
   const router = useRouter();
-  const supabase = getSupabaseBrowser();
 
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
@@ -67,6 +66,7 @@ export default function LoginPage() {
       e.preventDefault();
       setError(null); setInfo(null); setLoading(true);
       try {
+      const supabase = getSupabaseBrowser();
         if (mode === "signin") {
           const { error } = await supabase.auth.signInWithPassword({ email, password });
           if (error) throw error;
