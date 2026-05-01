@@ -153,7 +153,7 @@ rounded-md transition-all">
       </header>
 
       {/* ============ Top step cards (5) ============ */}
-      <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
+      <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-5">
         {STEPS.map((meta) => {
           const stepRec = activeRun?.steps.find((s) => s.name === meta.name);
           const st = stepRec?.status ?? "idle";
@@ -292,10 +292,10 @@ function StepCard({
               : "bg-slate-200 dark:bg-slate-800"
         }`} />
 
-      <div className="p-3.5">
+      <div className="p-2.5">
         {/* Top row */}
-        <div className="flex items-center justify-between mb-3">
-          <div className={`w-7 h-7 rounded-md flex items-center justify-center ${TONE_ICON[meta.tone]}`}>
+        <div className="flex items-center justify-between mb-2">
+          <div className={`w-6 h-6 rounded-md flex items-center justify-center ${TONE_ICON[meta.tone]}`}>
             {meta.icon}
           </div>
           <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600">{meta.index.toString().padStart(2, "0")}</span>
@@ -307,7 +307,7 @@ function StepCard({
         </div>
 
         {/* Big count */}
-        <div className={`mt-0.5 text-2xl sm:text-3xl font-bold tabular-nums ${isError ? "text-red-700 dark:text-red-400"
+        <div className={`mt-0.5 text-xl sm:text-2xl font-bold tabular-nums ${isError ? "text-red-700 dark:text-red-400"
             : count === null ? "text-slate-300 dark:text-slate-700"
               : "text-slate-900 dark:text-slate-100"
           }`}>
@@ -315,7 +315,7 @@ function StepCard({
         </div>
 
         {/* Bottom row: duration + status */}
-        <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="mt-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <span className={`text-xs font-mono tabular-nums ${isRunning ? "text-blue-700 dark:text-blue-400 font-semibold"
               : isError ? "text-red-700 dark:text-red-400"
                 : duration > 0 ? "text-slate-700 dark:text-slate-300"
